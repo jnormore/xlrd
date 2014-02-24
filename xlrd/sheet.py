@@ -311,6 +311,7 @@ class Sheet(BaseObject):
         self.number = number
         self.verbosity = book.verbosity
         self.formatting_info = book.formatting_info
+        self.extract_formulas = book.extract_formulas
         self.ragged_rows = book.ragged_rows
         if self.ragged_rows:
             self.put_cell = self.put_cell_ragged
@@ -900,13 +901,15 @@ class Sheet(BaseObject):
                     xf_index =  self.fixed_BIFF2_xfindex(cell_attr, rowx, colx)
                     lenlen = 1
                     tkarr_offset = 16
-                if blah_formulas: # testing formula dumper
-                    #### XXXX FIXME
-                    fprintf(self.logfile, "FORMULA: rowx=%d colx=%d\n", rowx, colx)
+                if not self.extract_formulas:
+                    if blah_formulas: # testing formula dumper
+                        #### XXXX FIXME
+                        fprintf(self.logfile, "FORMULA: rowx=%d colx=%d\n", rowx, colx)
                     fmlalen = local_unpack("<H", data[20:22])[0]
-                    decompile_formula(bk, data[22:], fmlalen, FMLA_TYPE_CELL,
-                        browx=rowx, bcolx=colx, blah=1, r1c1=r1c1)
-                if result_str[6:8] == b"\xFF\xFF":
+                    d = decompile_formula(bk, data[22:], fmlalen, FMLA_TYPE_CELL,
+                        browx=rowx, bcolx=colx, blah=blah_formulas, r1c1=r1c1)
+                    self_put_cell(rowx, colx, XL_CELL_TEXT, d, xf_index)
+                elif result_str[6:8] == b"\xFF\xFF":
                     first_byte = BYTES_ORD(result_str[0])
                     if first_byte == 0:
                         # need to read next record (STRING)

@@ -70,6 +70,7 @@ def open_workbook_xls(filename=None,
     file_contents=None,
     encoding_override=None,
     formatting_info=False, on_demand=False, ragged_rows=False,
+    extract_formulas=True,
     ):
     t0 = time.clock()
     if TOGGLE_GC:
@@ -85,6 +86,7 @@ def open_workbook_xls(filename=None,
             formatting_info=formatting_info,
             on_demand=on_demand,
             ragged_rows=ragged_rows,
+            extract_formulas=extract_formulas,
             )
         t1 = time.clock()
         bk.load_time_stage_1 = t1 - t0
@@ -553,6 +555,7 @@ class Book(BaseObject):
         formatting_info=False,
         on_demand=False,
         ragged_rows=False,
+        extract_formulas=True,
         ):
         # DEBUG = 0
         self.logfile = logfile
@@ -560,6 +563,7 @@ class Book(BaseObject):
         self.use_mmap = use_mmap and MMAP_AVAILABLE
         self.encoding_override = encoding_override
         self.formatting_info = formatting_info
+        self.extract_formulas = extract_formulas
         self.on_demand = on_demand
         self.ragged_rows = ragged_rows
 
